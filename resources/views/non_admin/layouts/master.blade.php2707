@@ -1,0 +1,281 @@
+<?php
+$masters = get_master_slugs();
+unset($masters['case_category']);
+$my_profile_image = get_usermeta(Auth::user()->id, '_profile_image');
+?>
+<!DOCTYPE html>
+
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+<head>
+
+<!-- Required meta tags -->
+
+<meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="user-id" content="{{ Auth::check() ? Auth::user()->id : '' }}">
+<title>@yield('title') - {{ config('app.name', 'Shaine Lex Attorney At Law') }}</title>
+
+<!--[if lt IE 9]><script src="{{ asset('/public/non_admin/js/html5shiv.min.js') }}"></script><![endif]-->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ asset('/public/non_admin/images/apple-touch-icon-144-precomposed.png') }}">
+<link rel="shortcut icon" href="{{ asset('/public/non_admin/images/favicon.png') }}">
+
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet"> 
+
+<link href="{{ asset('/public/non_admin/css/all.css') }}" rel="stylesheet">
+
+<link href="{{ asset('/public/non_admin/css/bootstrap.css') }}" rel="stylesheet">
+
+<link href="{{ asset('/public/non_admin/css/responsive.css') }}" rel="stylesheet">
+
+
+<link href="{{ asset('/public/non_admin/css/style.css') }}" rel="stylesheet">
+
+<link href="{{ asset('/public/non_admin/css/jquery.filer-dragdropbox-theme.css') }}" rel="stylesheet">
+<link href="{{ asset('/public/non_admin/css/jquery.filer.css') }}" rel="stylesheet">
+
+<link href="{{ asset('/public/css/waitMe.min.css') }}" rel="stylesheet">
+
+<link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.bootstrap4.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+<script type="text/javascript" src="{{ asset('/public/js/jquery.min.js') }}" ></script>
+<script>
+    var fileThumbUrl = `{{ asset('images/file.png') }}`;
+    var masterType = `{{ isset($data['master_type']) ? $data['master_type'] : '' }}`;
+</script>
+</head>
+
+
+
+<body>
+
+<header class="header">
+
+<div class="container clearfix">
+
+<div class="logo"><a href="#"><img src="{{ asset('/public/non_admin/images/logo.png') }}" alt=""></a></div>
+
+<div class="user-block">
+    <a data-toggle="collapse" href="#collapseAcc" role="button" aria-expanded="false" >
+@if($my_profile_image == null)
+<img src="{{ asset('/public/images/default-user.jpg') }}" alt="{{ Auth::user()->name }}">
+@else
+<?php $my_profile_image_url = 'public/storage/'.$my_profile_image;?>
+<img src="{{ url($my_profile_image_url) }}" alt="{{ Auth::user()->name }}">
+@endif
+        
+    </a>
+</div>
+
+<a class="notification" data-toggle="collapse" href="#collapseNoti" role="button" aria-expanded="false">
+    <i class="fas fa-bell"></i>
+    <span>
+@if(Auth::user()->unreadNotifications->count() > 0)
+    {{Auth::user()->unreadNotifications->count()}}
+@else
+0
+@endif
+    </span>
+</a>
+
+<div class="header-collapse link-collapse">
+
+<div class="collapse" id="collapseAcc">
+
+<div class="card card-body">
+
+<ul>
+
+<li><a href="{{url('/profile')}}">My Profile</a></li>
+<li><a href="{{url('/my_todo_list')}}">My TODO</a></li>
+<li><a href="{{url('/my_incident_list')}}">My Incident</a></li>
+<li><a href="{{url('/my_evaluation')}}">My Assessment</a></li>
+<li>
+    <a  href="{{ route('logout') }}"
+       onclick="event.preventDefault();
+                     document.getElementById('logout-form').submit();">
+        Logout        
+    </a>
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="header-collapse notification-collapse">
+
+<div class="collapse" id="collapseNoti">
+
+<div class="card card-body">
+
+<ul>
+@if(Auth::user()->unreadNotifications->count() > 0)
+@foreach(Auth::user()->unreadNotifications as $notification)
+<li><a href="{{$notification->data['letter']['link']}}"><strong>{{$notification->data['letter']['title']}}</strong><small> {{$notification->data['letter']['body']}}</small></a></li>
+@endforeach
+<li><a href="{{route('markAsRead')}}">Mark As Read</a></li>
+@else
+<li><a href="javascript:void(0);">You have no notifications</a></li>
+@endif
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+
+
+<div class="section">
+
+<div class="container">
+
+<div class="row">
+
+<div class="col-lg-4 col-md-5">
+
+<div class="sidebar">
+
+<div class="profile-info">
+
+<div class="profile-image">
+
+<div class="upload-btn-wrapper"><button class="upload-btn">Upload a file</button><input type="file" name="myfile"  accept=".gif,.jpg,.jpeg,.png" /></div>
+
+@if($my_profile_image == null)
+<img src="{{ asset('/public/images/default-user.jpg') }}" alt="{{ Auth::user()->name }}">
+@else
+<?php $my_profile_image_url = 'public/storage/'.$my_profile_image;?>
+<img src="{{ url($my_profile_image_url) }}" alt="{{ Auth::user()->name }}">
+@endif
+
+</div>
+
+<h5>{{ Auth::user()->name }}</h5>
+
+</div>
+
+<ul>
+
+<li><a href="{{ url('/') }}"><i class="fa fa-home"></i>Dashboard</a></li>
+
+<li class="<?php if(Request::segment(1) == 'user') { echo 'active';} ?>"><a href="javascript:void();"><i class="fa fa-user"></i>Manage User</a>
+<ul <?php if(Request::segment(1) == 'user') { echo 'style="display: block"';} ?>>
+<li><a href="{{ url('/user') }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i>User List</a></li>
+<li><a href="{{ url('/user/create') }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Add User</a></li>
+<li><a href="{{ url('/userrole') }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i>User Role Editor</a></li>
+</ul>
+</li>
+<li><a href="{{ url('/user_attendence') }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Attendence</a></li>
+@foreach($masters as $key => $master)
+<li class="<?php if(isset($_GET['master_type']) && $_GET['master_type'] == $key) { echo 'active';} ?>"><a href="{{
+$key == 'revision' ? url('/master?master_type='.$key) : 'javascript:void(0);' }}"><i class="fa fa-th-large"></i>{{
+$key == 'revision' ? $master : 'Manage '.$master }}</a>
+@if($key != 'revision')
+<ul <?php if(isset($_GET['master_type']) && $_GET['master_type'] == $key) { echo 'style="display: block"';} ?>>
+<li><a href="{{ url('/master?master_type='.$key) }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i>{{$master}} List</a></li>
+<li><a href="{{ url('/master/create?master_type='.$key) }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Add {{$master}}</a></li>
+@if($key == 'case')
+<li><a href="{{ url('/master?master_type=case_category') }}"><i class="fa fa-angle-double-right" aria-hidden="true"></i>Categories</a></li>    
+@endif
+</ul>
+@endif
+</li>
+@endforeach
+</ul>
+
+</div>
+
+</div>
+
+@yield('content')
+
+</div>
+
+</div>
+
+</div>
+
+<footer class="footer">
+
+<div class="container">
+
+<p>Copyright © {{ date('Y') }} {{ config('app.name', 'Shaine Lex Attorney At Law') }}. All Rights Reserved </p>
+
+</div>
+
+</footer>
+
+
+
+<!-- Bootstrap core JavaScript================================================== -->
+
+<!-- Placed at the end of the document so the pages load faster -->
+
+<script src="{{ asset('/public/non_admin/js/popper.min.js') }}"></script>
+
+<script src="{{ asset('/public/non_admin/js/bootstrap.min.js') }}"></script>
+
+<script src="{{ asset('/public/non_admin/js/ie10-viewport-bug-workaround.js') }}"></script>
+
+<script src="{{ asset('/public/non_admin/js/ie-emulation-modes-warning.js') }}"></script>
+
+<script src="{{ asset('/public/non_admin/js/custom.js') }}"></script>
+
+<script src="{{ asset('/public/non_admin/js/jquery.matchHeight-min.js') }}"></script>
+
+<script type="text/javascript" src="{{ asset('/public/js/jquery.filer.js') }}" ></script>
+<script src="{{ asset('/public/js/jquery.validationEngine-en.js') }}"  type="text/javascript" charset="utf-8"></script>
+<script src="{{ asset('/public/js/jquery.validationEngine.js') }}"  type="text/javascript" charset="utf-8"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" ></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" ></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js" ></script>
+<script src="https://cdn.datatables.net/responsive/2.2.5/js/responsive.bootstrap4.min.js" ></script>
+<script src="{{ asset('/public/js/jquery.mCustomScrollbar.concat.min.js') }}" ></script>
+<script language="javascript" src="{{ asset('/public/js/jquery.pwdMeter.js') }}" ></script>
+<script src="{{ asset('/public/js/hideShowPassword.min.js') }}" ></script>
+<script src="{{ asset('/public/js/clipboard.min.js') }}" ></script>
+<script src="{{ asset('/public/js/trigger.js') }}" ></script>
+<script src="{{ asset('/public/js/tooltips.js') }}" ></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="{{ asset('/public/js/waitMe.min.js') }}" ></script>
+<script type='text/javascript' src="{{ asset('/public/js/jquery-ui.js') }}" ></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="{{ asset('/public/js/custom.js') }}?v={{ date('his') }}" ></script>
+<script src="{{ asset('/public/js/app.js') }}"></script>
+
+@if(session()->has('attendeeSuccessMsg'))
+<script type="text/javascript">
+    Swal.fire({
+      icon: 'success',
+      title: 'Welcome {{ Auth::user()->name }}',
+      text: "{{ session()->get('attendeeSuccessMsg') }}"
+    })
+</script>
+@endif
+
+</body>
+
+</html>

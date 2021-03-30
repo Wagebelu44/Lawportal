@@ -1,0 +1,31 @@
+/* #Media Queries
+================================================== */
+/* END__ */
+
+@media (min-width: 992px) and (max-width: 1199px) {
+} 
+/* END__ */
+
+@media (min-width: 768px) and (max-width: 991px) {
+} 
+/* END__ */
+
+@media only screen and (max-width: 767px) {
+body, .form-control, .btn , .dropdown-menu, .input-group-text, .popover-header{ font-size:1rem;}
+p {line-height:1.5rem}
+h1, .h1 {font-size:1.875rem;}
+h2, .h2 {font-size:1.6875rem;}
+h3, .h3 {font-size:1.4375rem;}
+h4, .h4 {font-size:1.25rem;}
+h5, .h5 {font-size:1.125rem;}
+h6, .h6 {font-size:1rem;}
+.section{ padding:20px 5px;}
+.sidebar{ margin-bottom:20px;}
+.header .container .logo{ width:160px; line-height:44px;}
+} 
+/* END__ */
+
+@media (max-width: 480px) {
+} 
+/* END__ */
+

@@ -1,0 +1,97 @@
+// JavaScript Document
+
+var ww = document.body.clientWidth;
+
+jQuery(document).ready(function () {
+
+jQuery(".menu li a").each(function () {
+
+if (jQuery(this).next().length > 0) {
+
+jQuery(this).addClass("parent");
+
+}
+
+;
+
+})
+
+jQuery(".toggleMenu").click(function (e) {
+
+e.preventDefault();
+
+jQuery(this).toggleClass("active");
+
+jQuery(".main-nav").slideToggle();
+
+});
+
+adjustMenu();
+
+})
+
+jQuery(window).bind('resize orientationchange', function () {
+
+ww = document.body.clientWidth;
+
+adjustMenu();
+
+});
+
+var adjustMenu = function () {
+
+if (ww <= 991) {
+
+jQuery(".toggleMenu").css("display", "inline-block");
+
+if (!jQuery(".toggleMenu").hasClass("active")) {
+
+jQuery(".main-nav").hide();
+
+} else {
+
+jQuery(".main-nav").show();
+
+}
+
+jQuery(".menu li").unbind('mouseenter mouseleave');
+
+jQuery(".menu li a.parent").unbind('click').bind('click', function (e) {
+
+// must be attached to anchor element to prevent bubbling
+
+e.preventDefault();
+
+jQuery(this).parent("li").toggleClass("hover");
+
+});
+
+} else if (ww > 991) {
+
+jQuery(".toggleMenu").css("display", "none");
+
+jQuery(".main-nav").show();
+
+jQuery(".menu li").removeClass("hover");
+
+jQuery(".menu li a").unbind('click');
+
+jQuery(".menu li").unbind('mouseenter mouseleave').bind('mouseenter mouseleave', function () {
+
+// must be attached to li so that mouseleave is not triggered when hover over submenu
+
+jQuery(this).toggleClass('hover');
+
+});
+
+}
+
+}
+
+
+
+/*document.getElementById('get_file').onclick = function() {
+
+document.getElementById('my_file').click();
+
+};*/
